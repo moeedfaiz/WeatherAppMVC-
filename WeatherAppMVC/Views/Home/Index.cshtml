@@ -1,0 +1,68 @@
+﻿@model WeatherAppMVC.Models.WeatherResponse
+
+<div class="container">
+    <h2 class="title">Weather Information</h2>
+
+    <form method="get" action="@Url.Action("GetWeather", "Home")" class="weather-form">
+        <input type="text" name="latitude" placeholder="Enter latitude" required />
+        <input type="text" name="longitude" placeholder="Enter longitude" required />
+        <button type="submit">Get Weather</button>
+    </form>
+
+    @if (Model != null)
+    {
+        <div class="weather-info">
+            <h3 class="section-title">Location Data</h3>
+            <div class="location-data">
+                <p>Latitude: @Model.Latitude</p>
+                <p>Longitude: @Model.Longitude</p>
+                <p>Timezone: @Model.Timezone (@Model.TimezoneAbbreviation)</p>
+                <p>Elevation: @Model.Elevation meters</p>
+                <p>Generation Time: @Model.GenerationTimeMs ms</p>
+            </div>
+
+            <h3 class="section-title">Hourly Weather Information</h3>
+            @if (Model.hourly?.Time != null && Model.hourly?.Temperature_2m != null && Model.hourly.Time.Count > 0 && Model.hourly.Temperature_2m.Count > 0)
+            {
+                <ul class="hourly-weather-list">
+                    @for (int i = 0; i < Model.hourly.Time.Count; i++)
+                    {
+                        <li class="hourly-weather-item">
+                            <span class="time">@Model.hourly.Time[i].ToString("yyyy-MM-dd HH:mm")</span>
+                            <span class="temperature">@Model.hourly.Temperature_2m[i] °C</span>
+                            <span class="emoji">
+                                @{
+                                    var temp = Model.hourly.Temperature_2m[i];
+                                    if (temp < 0)
+                                    {
+                                        @:❄️  <!-- Snowflake for freezing weather -->
+                                    }
+                                    else if (temp < 15)
+                                    {
+                                        @:🌧️  <!-- Rainy for cool weather -->
+                                    }
+                                    else if (temp < 25)
+                                    {
+                                        @:⛅  <!-- Cloudy for mild weather -->
+                                    }
+                                    else if (temp < 35)
+                                    {
+                                        @:☀️  <!-- Sunny for warm weather -->
+                                    }
+                                    else
+                                    {
+                                        @:🔥  <!-- Fire for hot weather -->
+                                    }
+                                }
+                            </span>
+                        </li>
+                    }
+                </ul>
+            }
+            else
+            {
+                <p>No hourly temperature data available.</p>
+            }
+        </div>
+    }
+</div>
